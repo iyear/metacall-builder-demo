@@ -19,8 +19,8 @@ func NewDepsCmd() *cobra.Command {
 
 			opts.Languages = cmd.Context().Value(languagesKey{}).([]builder.Language)
 
-			depsBase := staging.DepsBase(base, opts.Branch)
-			deps := staging.DepsLang(base, opts.Languages)
+			depsBase := staging.Deps.Base(base, opts.Branch)
+			deps := staging.Deps.Languages(depsBase, opts.Languages)
 
 			// remove deps base from final image to reduce size
 			deps = llb.Diff(depsBase, deps)
@@ -30,7 +30,7 @@ func NewDepsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&opts.Branch, "branch", "B", "develop", "metacall/core branch to use")
+	cmd.Flags().StringVarP(&opts.Branch, "branch", "B", "develop", "core git branch to use")
 
 	return cmd
 }
