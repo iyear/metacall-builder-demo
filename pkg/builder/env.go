@@ -64,10 +64,15 @@ func (e Env) Base() Env {
 	return e
 }
 
-func (e Env) MetaCall(branch string) Env {
+func (e Env) MetaCallClone(branch string) Env {
 	e.state = e.state.Run(llb.Shlexf("git clone --depth 1 --single-branch --branch=%v https://github.com/metacall/core.git", branch)).
-		Run(llb.Shlex("mkdir core/build")).
-		Dir("core/build").
+		Run(llb.Shlex("mkdir core/build")).Root()
+
+	return e
+}
+
+func (e Env) MetaCallCompile() Env {
+	e.state = e.state.Dir("core/build").
 		Run(llb.Shlex("cmake -DOPTION_BUILD_SCRIPTS=OFF -DOPTION_BUILD_EXAMPLES=OFF -DOPTION_BUILD_TESTS=OFF -DOPTION_BUILD_DOCS=OFF -DOPTION_FORK_SAFE=OFF ..")).
 		Run(llb.Shlexf("cmake --build . -j %v --target install", runtime.NumCPU())).Root()
 

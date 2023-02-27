@@ -22,8 +22,8 @@ func NewDepsCmd() *cobra.Command {
 
 			opts.Languages = cmd.Context().Value(languagesKey{}).([]string)
 
-			depsBase := builder.Environment(base).Base().Root()
-			deps := builder.Environment(depsBase).MetaCall(opts.Branch).Languages(opts.Languages).Root()
+			depsBase := builder.Environment(base).Base().MetaCallClone(opts.Branch).Root()
+			deps := builder.Environment(depsBase).MetaCallCompile().Languages(opts.Languages).Root()
 
 			// remove deps base from final image to reduce size
 			deps = llb.Diff(depsBase, deps)

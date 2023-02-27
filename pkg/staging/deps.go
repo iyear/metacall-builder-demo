@@ -11,7 +11,7 @@ var Deps = deps{}
 
 func (deps) Base(base llb.State, branch string) llb.State {
 	return builder.Environment(base).
-		Base().MetaCall(branch).Root()
+		Base().MetaCallClone(branch).MetaCallCompile().Root()
 }
 
 func (deps) Languages(base llb.State, languages []string) llb.State {
