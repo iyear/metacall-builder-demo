@@ -13,9 +13,9 @@ import (
 -[x] ruby
 -[x] rust
 -[x] netcore
--[ ] netcore2
--[ ] netcore5
--[ ] netcore7
+-[x] netcore2
+-[x] netcore5
+-[x] netcore7
 -[x] rapidjson
 -[x] funchook
 -[ ] v8/v8rep54
@@ -168,7 +168,8 @@ func (e Env) FuncHook() Env {
 
 func (e Env) NetCore() Env {
 	version := "1.1.11"
-	e.state = e.state.Run(llb.Shlex("apt-get install -y --no-install-recommends libc6 libcurl3 libgcc1 libgssapi-krb5-2 libicu57 liblttng-ust0 libssl1.0.2 libstdc++6 libunwind8 libuuid1 zlib1g")).
+	e.state = e.state.
+		Run(llb.Shlex("apt-get install -y --no-install-recommends libc6 libcurl3 libgcc1 libgssapi-krb5-2 libicu57 liblttng-ust0 libssl1.0.2 libstdc++6 libunwind8 libuuid1 zlib1g")).
 		Run(llb.Shlexf("wget %s -O dotnet.tar.gz", fmt.Sprintf("https://dotnetcli.blob.core.windows.net/dotnet/Sdk/%s/dotnet-dev-debian.9-x64.%s.tar.gz", version, version))).
 		Run(llb.Shlex("mkdir -p /usr/share/dotnet")).
 		Run(llb.Shlex("tar -zxf dotnet.tar.gz -C /usr/share/dotnet")).
@@ -180,6 +181,42 @@ func (e Env) NetCore() Env {
 		Dir("..").
 		Run(llb.Shlex("rm -rf warmup")).
 		Run(llb.Shlex("rm -rf /tmp/NuGetScratch")).
+		Root()
+
+	return e
+}
+
+func (e Env) netCoreBase() Env {
+	e.state = e.state.
+		Run(llb.Shlex("wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb")).
+		Run(llb.Shlex("dpkg -i packages-microsoft-prod.deb")).
+		Run(llb.Shlex("rm packages-microsoft-prod.deb")).
+		Run(llb.Shlex("apt-get update")).
+		Run(llb.Shlex("apt-get install -y --no-install-recommends apt-transport-https")).
+		Root()
+
+	return e
+}
+
+func (e Env) NetCore2() Env {
+	e.state = e.netCoreBase().state.
+		Run(llb.Shlex("apt-get install -y --no-install-recommends dotnet-sdk-2.2")).
+		Root()
+
+	return e
+}
+
+func (e Env) NetCore5() Env {
+	e.state = e.netCoreBase().state.
+		Run(llb.Shlex("apt-get install -y --no-install-recommends dotnet-sdk-5.0")).
+		Root()
+
+	return e
+}
+
+func (e Env) NetCore7() Env {
+	e.state = e.netCoreBase().state.
+		Run(llb.Shlex("apt-get install -y --no-install-recommends dotnet-sdk-7.0")).
 		Root()
 
 	return e
