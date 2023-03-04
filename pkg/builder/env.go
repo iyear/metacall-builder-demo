@@ -23,12 +23,12 @@ import (
 -[ ] v8rep58
 -[ ] v8rep52
 -[ ] v8rep51
--[ ] nodejs
--[ ] typescript
--[ ] file
--[ ] rpc
--[ ] wasm
--[ ] java
+-[x] nodejs
+-[x] typescript
+-[x] file
+-[x] rpc
+-[x] wasm
+-[x] java
 -[ ] c
 -[ ] cobol
 
@@ -217,6 +217,52 @@ func (e Env) NetCore5() Env {
 func (e Env) NetCore7() Env {
 	e.state = e.netCoreBase().state.
 		Run(llb.Shlex("apt-get install -y --no-install-recommends dotnet-sdk-7.0")).
+		Root()
+
+	return e
+}
+
+func (e Env) NodeJS() Env {
+	e.state = e.state.
+		Run(llb.Shlex("apt-get update")).
+		Run(llb.Shlex("apt-get install -y --no-install-recommends python3 g++ make nodejs npm curl")).
+		Root()
+
+	return e
+}
+
+func (e Env) TypeScript() Env {
+	e.state = e.state.
+		// Install React dependencies in order to run the tests
+		Run(llb.Shlex("npm i react@latest -g")).
+		Run(llb.Shlex("npm i react-dom@latest -g")).
+		Root()
+
+	return e
+}
+
+func (e Env) File() Env {
+	return e
+}
+
+func (e Env) RPC() Env {
+	e.state = e.state.
+		Run(llb.Shlex("apt-get install -y --no-install-recommends libcurl4-openssl-dev")).
+		Root()
+
+	return e
+}
+
+func (e Env) WASM() Env {
+	// TODO: add shell script
+
+	return e
+}
+
+func (e Env) Java() Env {
+	e.state = e.state.
+		Run(llb.Shlex("apt-get update")).
+		Run(llb.Shlex("apt-get install -y --no-install-recommends default-jre default-jdk")).
 		Root()
 
 	return e
