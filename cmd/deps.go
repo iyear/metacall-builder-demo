@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/iyear/metacall-builder-demo/pkg/builder"
+	"github.com/iyear/metacall-builder-demo/pkg/staging"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +24,8 @@ func NewDepsCmd() *cobra.Command {
 			opts.Languages = cmd.Context().Value(languagesKey{}).([]string)
 
 			depsBase := builder.Environment(base).Base().MetaCallClone(opts.Branch).Root()
-			deps := builder.Environment(depsBase).MetaCallCompile().Languages(opts.Languages).Root()
+			deps := builder.Environment(depsBase).MetaCallCompile().Root()
+			deps = staging.Deps.Languages(deps, opts.Languages)
 
 			// remove deps base from final image to reduce size
 			deps = llb.Diff(depsBase, deps)

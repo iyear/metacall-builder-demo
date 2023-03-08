@@ -15,5 +15,13 @@ func (deps) Base(base llb.State, branch string) llb.State {
 }
 
 func (deps) Languages(base llb.State, languages []string) llb.State {
-	return builder.Environment(base).Languages(languages).Root()
+	env := builder.Environment(base)
+	for _, lang := range languages {
+		switch lang {
+		case "python":
+			env = env.Python()
+		}
+	}
+
+	return env.Root()
 }
