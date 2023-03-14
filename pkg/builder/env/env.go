@@ -1,4 +1,4 @@
-package builder
+package env
 
 import (
 	_ "embed"
@@ -46,7 +46,7 @@ type Env struct {
 	state llb.State
 }
 
-func Environment(base llb.State) Env {
+func New(base llb.State) Env {
 	return Env{
 		state: base,
 	}

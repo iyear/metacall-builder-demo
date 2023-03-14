@@ -1,7 +1,7 @@
 package staging
 
 import (
-	"github.com/iyear/metacall-builder-demo/pkg/builder"
+	"github.com/iyear/metacall-builder-demo/pkg/builder/env"
 	"github.com/moby/buildkit/client/llb"
 )
 
@@ -10,18 +10,19 @@ type deps struct{}
 var Deps = deps{}
 
 func (deps) Base(base llb.State, branch string) llb.State {
-	return builder.Environment(base).
+	return env.New(base).
 		Base().MetaCallClone(branch).MetaCallCompile().Root()
 }
 
 func (deps) Languages(base llb.State, languages []string) llb.State {
-	env := builder.Environment(base)
+	state := env.New(base)
+
 	for _, lang := range languages {
 		switch lang {
 		case "python":
-			env = env.Python()
+			state = state.Python()
 		}
 	}
 
-	return env.Root()
+	return state.Root()
 }
